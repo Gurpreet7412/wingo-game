@@ -1,302 +1,229 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Win Go 1 Min</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-    body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; padding: 15px 10px 40px 10px; }
-    .app-container { width: 100%; max-width: 460px; background: #1e293b; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0b1426; color: #fff; display: flex; justify-content: center; padding: 15px; }
+    .container { width: 100%; max-width: 420px; background-color: #121f3d; border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
     
-    .auth-box { text-align: center; padding: 10px 0; }
-    .auth-box h2 { color: #38bdf8; margin-bottom: 8px; }
-    .auth-box p { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
-    .auth-toggle { margin-top: 15px; font-size: 13px; color: #94a3b8; }
-    .auth-toggle span { color: #38bdf8; cursor: pointer; font-weight: bold; }
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .title { font-size: 20px; font-weight: bold; color: #38bdf8; }
+    .user-info { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .user-info span { color: #f87171; cursor: pointer; }
+    .wallet-box { background: #1e293b; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #34d399; }
 
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .header h2 { font-size: 18px; color: #38bdf8; }
-    .user-info { font-size: 12px; color: #94a3b8; }
-    .wallet-badge { background: #334155; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; border: 1px solid #475569; }
-    .wallet-badge span { color: #4ade80; }
-
-    .top-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-    .btn-action-top { border: none; padding: 10px 0; border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; text-align: center; }
-    .btn-recharge { background: #16a34a; }
+    /* Action Buttons */
+    .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
+    .btn-action { border: none; padding: 8px 4px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; color: #fff; text-align: center; }
+    .btn-deposit { background: #16a34a; }
     .btn-withdraw { background: #ea580c; }
     .btn-support { background: #0284c7; }
+    .btn-history { background: #7c3aed; }
 
-    .status-card { background: #0f172a; border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border: 1px solid #334155; }
-    .period-box div { font-size: 12px; color: #94a3b8; }
-    .period-box h3 { font-size: 15px; color: #f1f5f9; }
-    .timer-box { text-align: right; }
-    .timer-box div { font-size: 12px; color: #94a3b8; }
-    .timer-digits { font-size: 22px; font-weight: 800; color: #f59e0b; }
+    /* Timer Card */
+    .timer-card { background: #0f172a; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; margin-bottom: 16px; border: 1px solid #1e293b; }
+    .period-title { font-size: 11px; color: #94a3b8; }
+    .period-id { font-size: 15px; font-weight: bold; }
+    .timer-title { font-size: 11px; color: #94a3b8; text-align: right; }
+    .timer-clock { font-size: 18px; font-weight: bold; color: #f8fafc; }
 
-    .section-title { font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; }
-
+    /* Selection Elements */
+    .section-title { font-size: 11px; color: #94a3b8; font-weight: bold; margin-bottom: 6px; }
     .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-    .btn-color-opt { border: none; border-radius: 8px; padding: 10px 0; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; }
-    .btn-color-opt.selected { outline: 3px solid #fff; }
-    .bg-green { background: #16a34a; }
-    .bg-violet { background: #9333ea; }
-    .bg-red { background: #dc2626; }
+    .btn-color { border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #fff; }
+    .color-green { background: #22c55e; }
+    .color-violet { background: #a855f7; }
+    .color-red { background: #ef4444; }
 
     .number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 16px; }
-    .btn-num { background: #334155; border: 1px solid #475569; border-radius: 6px; padding: 8px 0; color: #f8fafc; font-weight: 700; font-size: 15px; cursor: pointer; }
-    .btn-num.selected { background: #0284c7; outline: 2px solid #fff; }
+    .btn-num { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-active { border: 2px solid #38bdf8; transform: scale(0.96); }
 
-    .amount-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
-    .btn-chip { background: #1e293b; border: 1px solid #475569; color: #cbd5e1; border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .btn-chip.selected { background: #ca8a04; color: #fff; }
+    .chip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+    .chip { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 6px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .input-box { width: 100%; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 14px; outline: none; }
 
-    .input-box { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; }
-    .btn-lock { width: 100%; padding: 12px; background: #2563eb; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
-    .btn-lock:disabled { background: #475569; cursor: not-allowed; }
+    .btn-submit { width: 100%; background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
+    .btn-indicator { width: 100%; background: #1e293b; color: #94a3b8; border: none; padding: 10px; border-radius: 8px; font-size: 12px; cursor: default; }
 
-    .status-banner { margin: 12px 0; padding: 10px; border-radius: 6px; text-align: center; font-size: 13px; font-weight: 600; background: #334155; min-height: 40px; display: flex; align-items: center; justify-content: center; }
-    .status-banner.win { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
-    .status-banner.loss { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    /* History Box */
+    .history-card { margin-top: 15px; background: #0f172a; border-radius: 10px; padding: 10px; font-size: 12px; border: 1px solid #1e293b; }
+    .history-card h4 { font-size: 12px; color: #94a3b8; margin-bottom: 8px; }
+    .history-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e293b; }
 
-    .table-container { margin-top: 15px; border-top: 1px solid #334155; padding-top: 12px; }
-    table { width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; }
-    th { color: #94a3b8; padding: 6px; border-bottom: 1px solid #334155; }
-    td { padding: 6px; border-bottom: 1px solid #1e293b; }
-    .badge-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
-
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 100; }
-    .modal-card { background: #1e293b; width: 100%; max-width: 380px; border-radius: 12px; padding: 20px; border: 1px solid #475569; }
-    .modal-card h3 { margin-bottom: 12px; color: #38bdf8; font-size: 18px; }
-    .modal-item { background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px; line-height: 1.6; }
-    .modal-item strong { color: #38bdf8; }
-    .btn-close { width: 100%; padding: 10px; background: #475569; border: none; border-radius: 6px; color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px; }
-    .btn-contact { padding: 10px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; color: #fff; display: block; background: #0284c7; }
+    /* Modals / Popups */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal-content { background: #1e293b; width: 100%; max-width: 350px; border-radius: 12px; padding: 16px; border: 1px solid #334155; text-align: center; }
+    .modal-content h3 { margin-bottom: 10px; font-size: 16px; color: #38bdf8; }
+    .modal-content p { font-size: 13px; color: #cbd5e1; margin-bottom: 15px; line-height: 1.4; }
+    .modal-btn { background: #2563eb; border: none; color: #fff; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; }
   </style>
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
 
-<div class="app-container">
-  <!-- Auth Screen -->
-  <div id="auth-section" class="auth-box">
-    <h2 id="auth-title">Account Login</h2>
-    <p>Mobile number aur password enter karein</p>
-    <input type="tel" id="auth-phone" class="input-box" placeholder="Mobile Number (10 digits)" maxlength="10" />
-    <input type="password" id="auth-pass" class="input-box" placeholder="Password" />
-    <button class="btn-lock" id="btn-auth" onclick="handleAuth()">Login</button>
-    <div class="auth-toggle">
-      <span id="toggle-text" onclick="toggleAuthMode()">Naya account banayein? Sign Up</span>
-    </div>
-  </div>
-
-  <!-- Game Screen -->
-  <div id="game-section" style="display: none;">
+  <div class="container">
     <div class="header">
       <div>
-        <h2>Win Go 1 Min</h2>
-        <div class="user-info">User: <span id="display-phone">9999999999</span> | <a href="#" onclick="logout()" style="color:#ef4444; text-decoration:none;">Logout</a></div>
+        <div class="title">Win Go 1 Min</div>
+        <div class="user-info">User: 7412881011 | <span onclick="openModal('Logout', 'Aapka demo account successfully logout ho gaya.')">Logout</span></div>
       </div>
-      <div class="wallet-badge">Wallet: ₹<span id="balance">1000</span></div>
+      <div class="wallet-box">Wallet: <span id="wallet-balance">₹1000</span></div>
     </div>
 
-    <div class="top-actions">
-      <button class="btn-action-top btn-recharge" onclick="openModal('recharge-modal')">➕ Deposit</button>
-      <button class="btn-action-top btn-withdraw" onclick="openModal('withdraw-modal')">💸 Withdraw</button>
-      <button class="btn-action-top btn-support" onclick="openModal('support-modal')">🎧 Support</button>
+    <!-- 4 Functional Action Buttons -->
+    <div class="action-grid">
+      <button class="btn-action btn-deposit" onclick="openModal('Deposit System', 'UPI / QR Code deposit option jald integrate hoga. Apna demo balance check karein.')">+ Deposit</button>
+      <button class="btn-action btn-withdraw" onclick="openModal('Withdrawal System', 'Minimum withdrawal ₹110 hai. Aapka current balance demo testing mode me hai.')">💸 Withdraw</button>
+      <button class="btn-action btn-support" onclick="openModal('24/7 Support', 'Telegram / Customer Care Support service connect ho rahi hai...')">🎧 Support</button>
+      <button class="btn-action btn-history" onclick="toggleHistoryModal()">📜 History</button>
     </div>
 
-    <div class="status-card">
-      <div class="period-box">
-        <div>Period ID</div>
-        <h3 id="period-num">20260825001</h3>
+    <!-- Timer Section -->
+    <div class="timer-card">
+      <div>
+        <div class="period-title">Period ID</div>
+        <div class="period-id" id="period-id">20260825001</div>
       </div>
-      <div class="timer-box">
-        <div>Remaining</div>
-        <div class="timer-digits" id="timer">00:30</div>
+      <div>
+        <div class="timer-title">Remaining</div>
+        <div class="timer-clock" id="timer">00:30</div>
       </div>
     </div>
 
-    <div class="section-title">Color (2x - 4.5x)</div>
+    <!-- Selection Pads -->
+    <div class="section-title">COLOR (2X - 4.5X)</div>
     <div class="color-grid">
-      <button class="btn-color-opt bg-green" onclick="selectItem('color', 'Green', this)">Green</button>
-      <button class="btn-color-opt bg-violet" onclick="selectItem('color', 'Violet', this)">Violet</button>
-      <button class="btn-color-opt bg-red" onclick="selectItem('color', 'Red', this)">Red</button>
+      <button class="btn-color color-green" onclick="selectChoice('Green')">Green</button>
+      <button class="btn-color color-violet" onclick="selectChoice('Violet')">Violet</button>
+      <button class="btn-color color-red" onclick="selectChoice('Red')">Red</button>
     </div>
 
-    <div class="section-title">Number (9x)</div>
+    <div class="section-title">NUMBER (9X)</div>
     <div class="number-grid">
-      <button class="btn-num" onclick="selectItem('number', 0, this)">0</button>
-      <button class="btn-num" onclick="selectItem('number', 1, this)">1</button>
-      <button class="btn-num" onclick="selectItem('number', 2, this)">2</button>
-      <button class="btn-num" onclick="selectItem('number', 3, this)">3</button>
-      <button class="btn-num" onclick="selectItem('number', 4, this)">4</button>
-      <button class="btn-num" onclick="selectItem('number', 5, this)">5</button>
-      <button class="btn-num" onclick="selectItem('number', 6, this)">6</button>
-      <button class="btn-num" onclick="selectItem('number', 7, this)">7</button>
-      <button class="btn-num" onclick="selectItem('number', 8, this)">8</button>
-      <button class="btn-num" onclick="selectItem('number', 9, this)">9</button>
+      <button class="btn-num" onclick="selectChoice('0')">0</button>
+      <button class="btn-num" onclick="selectChoice('1')">1</button>
+      <button class="btn-num" onclick="selectChoice('2')">2</button>
+      <button class="btn-num" onclick="selectChoice('3')">3</button>
+      <button class="btn-num" onclick="selectChoice('4')">4</button>
+      <button class="btn-num" onclick="selectChoice('5')">5</button>
+      <button class="btn-num" onclick="selectChoice('6')">6</button>
+      <button class="btn-num" onclick="selectChoice('7')">7</button>
+      <button class="btn-num" onclick="selectChoice('8')">8</button>
+      <button class="btn-num" onclick="selectChoice('9')">9</button>
     </div>
 
-    <div class="section-title">Bet Amount (₹)</div>
-    <div class="amount-grid">
-      <button class="btn-chip" onclick="setChip(10, this)">₹10</button>
-      <button class="btn-chip" onclick="setChip(50, this)">₹50</button>
-      <button class="btn-chip" onclick="setChip(100, this)">₹100</button>
-      <button class="btn-chip" onclick="setChip(500, this)">₹500</button>
+    <!-- Bet Inputs -->
+    <div class="section-title">BET AMOUNT (₹)</div>
+    <div class="chip-grid">
+      <button class="chip" onclick="setAmount(10)">₹10</button>
+      <button class="chip" onclick="setAmount(50)">₹50</button>
+      <button class="chip" onclick="setAmount(100)">₹100</button>
+      <button class="chip" onclick="setAmount(500)">₹500</button>
     </div>
+    <input type="number" id="custom-amount" class="input-box" placeholder="Enter custom amount (₹)" />
 
-    <input type="number" id="bet-input" class="input-box" placeholder="Enter custom amount (₹)" min="10" />
-    <button class="btn-lock" id="btn-submit" onclick="placeBet()">Confirm Bet</button>
+    <button class="btn-submit" onclick="placeBet()">Confirm Bet</button>
+    <button class="btn-indicator" id="selected-indicator">Select Color/Number to place bet</button>
 
-    <div id="status-box" class="status-banner">Select Color/Number to place bet</div>
-
-    <div class="table-container">
-      <div class="section-title">Recent Game History</div>
-      <table>
-        <thead>
-          <tr>
-            <th>Period</th>
-            <th>Number</th>
-            <th>Color</th>
-          </tr>
-        </thead>
-        <tbody id="history-body"></tbody>
-      </table>
+    <!-- Inline History Section -->
+    <div class="history-card">
+      <h4>RECENT GAME HISTORY</h4>
+      <div id="history-list">
+        <div class="history-row"><span>20260825000</span><span style="color:#22c55e">Green (7)</span></div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Support Modal -->
-<div id="support-modal" class="modal-overlay">
-  <div class="modal-card">
-    <h3>Customer Support</h3>
-    <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">Telegram support se sampark karein:</p>
-    <a href="https://t.me/Guri7412" target="_blank" class="btn-contact">✈️ Telegram: @Guri7412</a>
-    <button class="btn-close" onclick="closeModal('support-modal')">Close</button>
+  <!-- Popup / Modal Dialog -->
+  <div class="modal" id="info-modal">
+    <div class="modal-content">
+      <h3 id="modal-title">Popup</h3>
+      <p id="modal-body">Details yahan dikhengi.</p>
+      <button class="modal-btn" onclick="closeModal()">OK</button>
+    </div>
   </div>
-</div>
 
-<script>
-  let socket = null;
-  let isSignupMode = false;
-  let currentUser = null;
-  let balance = 1000;
-  let selectedType = null;
-  let selectedValue = null;
+  <script>
+    let currentSelection = null;
+    let selectedAmount = 0;
+    let balance = 1000;
+    let period = 20260825001;
+    let timeLeft = 30;
 
-  function toggleAuthMode() {
-    isSignupMode = !isSignupMode;
-    document.getElementById('auth-title').innerText = isSignupMode ? 'Create New Account' : 'Account Login';
-    document.getElementById('btn-auth').innerText = isSignupMode ? 'Sign Up' : 'Login';
-    document.getElementById('toggle-text').innerText = isSignupMode ? 'Pehle se account hai? Login karein' : 'Naya account banayein? Sign Up';
-  }
-
-  function handleAuth() {
-    const phone = document.getElementById('auth-phone').value.trim();
-    const pass = document.getElementById('auth-pass').value.trim();
-    if (phone.length !== 10 || isNaN(phone)) return alert('10-digit number required');
-    if (pass.length < 4) return alert('Minimum 4-character password required');
-
-    currentUser = { phone, pass };
-    document.getElementById('auth-section').style.display = 'none';
-    document.getElementById('game-section').style.display = 'block';
-    document.getElementById('display-phone').innerText = phone;
-    initSocketConnection();
-  }
-
-  function logout() { location.reload(); }
-  function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-  function initSocketConnection() {
-    // Render deployment ke baad yeh URL update hoga
-    socket = io(window.location.origin);
-
-    socket.on('gameState', (data) => {
-      document.getElementById('period-num').innerText = data.period;
-      data.history.forEach(item => addHistory(item.period, item.number, item.colors[0]));
-    });
-
-    socket.on('timerTick', (data) => {
-      document.getElementById('timer').innerText = `00:${data.countdown < 10 ? '0' + data.countdown : data.countdown}`;
-    });
-
-    socket.on('betResponse', (res) => {
-      if (res.success) {
-        balance = res.balance;
-        document.getElementById('balance').innerText = balance;
-        document.getElementById('status-box').innerText = res.message;
-      } else {
-        alert(res.message);
+    // Timer Interval
+    setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        timeLeft = 30;
+        period++;
+        document.getElementById('period-id').innerText = period;
+        recordHistory();
       }
-    });
+      document.getElementById('timer').innerText = `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`;
+    }, 1000);
 
-    socket.on('roundOutcome', (res) => {
-      balance = res.newBalance;
-      document.getElementById('balance').innerText = balance;
-      const statusBox = document.getElementById('status-box');
-      statusBox.className = res.won ? 'status-banner win' : 'status-banner loss';
-      statusBox.innerText = res.message;
-    });
+    function selectChoice(val) {
+      currentSelection = val;
+      document.getElementById('selected-indicator').innerText = `Selected: ${val}`;
+    }
 
-    socket.on('roundFinished', (data) => {
-      document.getElementById('period-num').innerText = data.nextPeriod;
-      addHistory(data.result.period, data.result.number, data.result.colors[0]);
-      resetSelection();
-    });
-  }
+    function setAmount(amt) {
+      selectedAmount = amt;
+      document.getElementById('custom-amount').value = amt;
+    }
 
-  function selectItem(type, value, element) {
-    document.querySelectorAll('.btn-color-opt, .btn-num').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
-    selectedType = type;
-    selectedValue = value;
-    document.getElementById('status-box').innerText = `Selected: ${value}`;
-  }
+    function placeBet() {
+      const customVal = document.getElementById('custom-amount').value;
+      const amount = customVal ? parseInt(customVal) : selectedAmount;
 
-  function setChip(val, element) {
-    document.querySelectorAll('.btn-chip').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
-    document.getElementById('bet-input').value = val;
-  }
+      if (!currentSelection) {
+        openModal('Selection Missing', 'Kripya pehle Color ya Number select karein.');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        openModal('Amount Missing', 'Kripya Bet Amount select karein.');
+        return;
+      }
+      if (amount > balance) {
+        openModal('Low Balance', 'Aapka wallet balance kam hai.');
+        return;
+      }
 
-  function placeBet() {
-    const amt = parseInt(document.getElementById('bet-input').value);
-    if (!selectedValue && selectedValue !== 0) return alert('Select color or number!');
-    if (isNaN(amt) || amt <= 0) return alert('Enter valid amount!');
-    if (!socket) return alert('Server connecting...');
+      balance -= amount;
+      document.getElementById('wallet-balance').innerText = `₹${balance}`;
+      openModal('Bet Confirmed', `Aapne Period ${period} me ₹${amount} ki bet '${currentSelection}' par place kar di hai.`);
+    }
 
-    socket.emit('placeBet', {
-      phone: currentUser.phone,
-      type: selectedType,
-      value: selectedValue,
-      amount: amt
-    });
-  }
+    function recordHistory() {
+      const historyList = document.getElementById('history-list');
+      const colors = ['Green', 'Red', 'Violet'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const randomNum = Math.floor(Math.random() * 10);
+      
+      const newRow = document.createElement('div');
+      newRow.className = 'history-row';
+      newRow.innerHTML = `<span>${period - 1}</span><span style="color:#38bdf8">${randomColor} (${randomNum})</span>`;
+      historyList.prepend(newRow);
+    }
 
-  function addHistory(period, num, color) {
-    const tableBody = document.getElementById('history-body');
-    const row = document.createElement('tr');
-    let colorBadge = '#16a34a';
-    if (color === 'Red') colorBadge = '#dc2626';
-    if (color === 'Violet') colorBadge = '#9333ea';
+    function openModal(title, message) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-body').innerText = message;
+      document.getElementById('info-modal').style.display = 'flex';
+    }
 
-    row.innerHTML = `
-      <td>${period}</td>
-      <td style="font-weight:bold; color:#38bdf8;">${num}</td>
-      <td><span class="badge-dot" style="background:${colorBadge};"></span>${color}</td>
-    `;
-    tableBody.prepend(row);
-    if (tableBody.children.length > 5) tableBody.removeChild(tableBody.lastChild);
-  }
+    function closeModal() {
+      document.getElementById('info-modal').style.display = 'none';
+    }
 
-  function resetSelection() {
-    selectedType = null;
-    selectedValue = null;
-    document.getElementById('bet-input').value = '';
-    document.querySelectorAll('.btn-color-opt, .btn-num, .btn-chip').forEach(el => el.classList.remove('selected'));
-  }
-</script>
+    function toggleHistoryModal() {
+      openModal('My Bet History', `Total Remaining Balance: ₹${balance}\nTotal Periods Played: Demo Records Active.`);
+    }
+  </script>
 </body>
 </html>
+
